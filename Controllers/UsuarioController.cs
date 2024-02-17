@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApiLautaroIriazabal.Models;
+using WebApiLautaroIriazabal.database;
+using WebApiLautaroIriazabal.Service;
+using WebApiLautaroIriazabal.DTO;
 
 namespace WebApiLautaroIriazabal.Controllers
 {
@@ -32,4 +36,4 @@ namespace WebApiLautaroIriazabal.Controllers
     }
 
 }
-}
+
