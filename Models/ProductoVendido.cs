@@ -1,4 +1,7 @@
-﻿namespace WebApiLautaroIriazabal.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace WebApiLautaroIriazabal.Models
 {
     public partial class ProductoVendido
     {
