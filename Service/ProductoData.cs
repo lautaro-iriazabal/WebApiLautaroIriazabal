@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using WebApiLautaroIriazabal.DTO;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace WebApiLautaroIriazabal.Service
 {
@@ -30,8 +32,15 @@ namespace WebApiLautaroIriazabal.Service
 
             Producto productoBuscado = context.Productos.Where(u => u.Id == id).FirstOrDefault();
 
+            // Verifica que se haya encontrado un producto con el id proporcionado.
+            if (productoBuscado == null)
+            {
+                throw new ArgumentException($"No se encontró ningún producto con el id {id}.");
+            }
+
             return productoBuscado;
         }
+
 
         public List<Producto> ListarProductos()
         {
