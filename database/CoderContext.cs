@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using WebApiLautaroIriazabal.Models;
+using WebApiLautaroIriazabal.database;
+using WebApiLautaroIriazabal.Service;
+using WebApiLautaroIriazabal.DTO;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApiLautaroIriazabal.database
 {
