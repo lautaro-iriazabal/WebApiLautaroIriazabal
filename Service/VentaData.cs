@@ -8,32 +8,91 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebApiLautaroIriazabal.DTO;
 using WebApiLautaroIriazabal.Mapper;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace WebApiLautaroIriazabal.Service
 {
     public class VentaData
     {
+        // Definición de las propiedades de la clase
         private CoderContext context;
+        private ProductoVendidoData productoVendidoData;
+        private ProductoData productoData;
+        private MapperVenta ventaMapper;
 
-        public VentaData(CoderContext coderContext)
+        // Constructor de la clase
+        public VentaData(CoderContext coderContext, ProductoVendidoData productoVendidoData, ProductoData productoData, MapperVenta ventaMapper)
         {
-            // Verifica que el contexto no sea nulo antes de asignarlo.
-            this.context = coderContext ?? throw new ArgumentNullException(nameof(coderContext));
+            this.context = coderContext;
+            this.productoVendidoData = productoVendidoData;
+            this.ventaMapper = ventaMapper;
+            this.productoData = productoData;
         }
 
+        // Método para obtener las ventas por ID de usuario
+        public List<VentaDTO> ObtenerVentasPorIdUsuario(int idUsuario)
+        {
+            return this.context.Venta.Where(v => v.IdUsuario == idUsuario)
+                .Select(v => this.ventaMapper.MapearToDto(v)).ToList();
+        }
+
+        // Método para agregar una nueva venta
+        public bool AgregarNuevaVenta(int idUsuario, List<ProductoDTO> productosDTO)
+        {
+            Venta venta = new Venta();
+            List<string> nombredeProductos = productosDTO.Select(p => p.Descripciones).ToList();
+            string comentarios = string.Join(",", nombredeProductos);
+            venta.Comentarios = comentarios;
+            venta.IdUsuario = idUsuario;
+
+            EntityEntry<Venta>? resultado = this.context.Venta.Add(venta);
+            resultado.State = Microsoft.EntityFrameworkCore.EntityState.Added;
+            this.context.SaveChanges();
+
+            this.MarcarComoProductosVendidos(productosDTO, venta.Id);
+
+            this.ActualizarStockDeProductosVendidos(productosDTO);
+
+            return true;
+        }
+
+        // Método para marcar productos como vendidos
+        private void MarcarComoProductosVendidos(List<ProductoDTO> productoDTOs, int idVenta)
+        {
+            productoDTOs.ForEach(p =>
+            {
+                ProductoVendidoDTO productoVendidoDTO = new ProductoVendidoDTO();
+                productoVendidoDTO.IdProducto = p.Id;
+                productoVendidoDTO.Stock = p.Stock;
+                productoVendidoDTO.IdVenta = idVenta;
+
+                this.productoVendidoData.AgregarUnProductoVendido(productoVendidoDTO);
+
+            });
+        }
+
+        // Método para actualizar el stock de los productos vendidos
+        private void ActualizarStockDeProductosVendidos(List<ProductoDTO> productoDTOs)
+        {
+
+            productoDTOs.ForEach(p =>
+            {
+                ProductoDTO productoActual = this.productoData.ObtenerProdcutosPorIdProducto(p.Id);
+                productoActual.Stock -= p.Stock;
+                this.productoData.ActualizarProducto(productoActual);
+
+            });
+        }
+
+        // Método para obtener una venta por su ID
         public Venta ObtenerVenta(int id)
         {
-            // Verifica que el id sea válido antes de buscar la venta.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-
             Venta ventaBuscado = context.Venta.Where(u => u.Id == id).FirstOrDefault();
 
             return ventaBuscado;
         }
 
+        // Método para listar todas las ventas
         public List<Venta> ListarVenta()
         {
             List<Venta> venta = context.Venta.ToList();
@@ -41,36 +100,24 @@ namespace WebApiLautaroIriazabal.Service
             return venta;
         }
 
-        public bool CrearVenta(Venta venta)
+        // Método para crear una venta
+        public bool CrearVenta(VentaDTO dto)
         {
-            // Verifica que la venta no sea nula antes de crearla.
-            if (venta == null)
-            {
-                throw new ArgumentNullException(nameof(venta));
-            }
+            Venta v = VentaMapper.MapearToVenta(dto);
 
-            context.Venta.Add(venta);
+            context.Venta.Add(v);
             context.SaveChanges();
 
             return true;
         }
 
-        public bool ModificarVenta(Venta venta, int id)
+        // Método para modificar una venta
+        public bool ModificarVenta(int id, VentaDTO ventaDTO)
         {
-            // Verifica que el id y la venta sean válidos antes de modificar la venta.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-            if (venta == null)
-            {
-                throw new ArgumentNullException(nameof(venta));
-            }
-
             Venta VentaBuscada = context.Venta.Where(v => v.Id == id).FirstOrDefault();
 
-            VentaBuscada.Comentarios = venta.Comentarios;
-            VentaBuscada.IdUsuario = venta.IdUsuario;
+            VentaBuscada.Comentarios = ventaDTO.Comentarios;
+            VentaBuscada.IdUsuario = ventaDTO.IdUsuario;
 
             context.Venta.Update(VentaBuscada);
             context.SaveChanges();
@@ -78,14 +125,9 @@ namespace WebApiLautaroIriazabal.Service
             return true;
         }
 
+        // Método para eliminar una venta
         public bool EliminarVenta(int id)
         {
-            // Verifica que el id sea válido antes de eliminar la venta.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-
             Venta ventaABorrado = context.Venta.Include(p => p.ProductoVendidos).Where(v => v.Id == id).FirstOrDefault();
 
             if (ventaABorrado is not null)
@@ -98,5 +140,6 @@ namespace WebApiLautaroIriazabal.Service
             return false;
         }
     }
+
 
 }
