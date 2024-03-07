@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApiLautaroIriazabal.DTO;
 using WebApiLautaroIriazabal.Mapper;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using WebApiLautaroIriazabal.Service;
 
 namespace WebApiLautaroIriazabal.Service
 {
