@@ -120,6 +120,15 @@ namespace WebApiLautaroIriazabal.Service
 
             return false;
         }
+        internal void ActualizarProducto(ProductoDTO productoActual)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal ProductoDTO ObtenerProdcutosPorIdProducto(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

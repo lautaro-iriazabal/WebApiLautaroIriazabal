@@ -19,7 +19,7 @@ namespace WebApiLautaroIriazabal.Service
         private CoderContext context;
         private ProductoVendidoData productoVendidoData;
         private ProductoData productoData;
-        private VentaMapper ventaMapper;
+        private MapperVenta ventaMapper;
 
         // Constructor de la clase
         public VentaData(CoderContext coderContext, ProductoVendidoData productoVendidoData, ProductoData productoData, MapperVenta ventaMapper)
