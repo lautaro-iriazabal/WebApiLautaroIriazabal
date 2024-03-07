@@ -5,72 +5,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebApiLautaroIriazabal.DTO;
+using WebApiLautaroIriazabal.Mapper;
 
 namespace WebApiLautaroIriazabal.Service
 {
     public class UsuarioData
     {
+        // Definición de las propiedades de la clase
         private CoderContext context;
+        private UsuarioMapper usuarioMapper;
 
-        public UsuarioData(CoderContext coderContext)
+        // Constructor de la clase
+        public UsuarioData(CoderContext coderContext, UsuarioMapper usuarioMapper)
         {
-            // Verifica que el contexto no sea nulo antes de asignarlo.
-            this.context = coderContext ?? throw new ArgumentNullException(nameof(coderContext));
+            this.context = coderContext;
+            this.usuarioMapper = usuarioMapper;
         }
 
-        public Usuario ObtenerUsuario(int id)
+        // Método para obtener un usuario por su nombre de usuario
+        public Usuario ObtenerUsuarioPorNombreDeUsuario(string nombreDeUsuario)
         {
-            // Verifica que el id sea válido antes de buscar el usuario.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-
-            Usuario usuarioBuscado = context.Usuarios.Where(u => u.Id == id).FirstOrDefault();
-
+            Usuario? usuarioBuscado = context.Usuarios.Where(u => u.NombreUsuario == nombreDeUsuario).FirstOrDefault();
             return usuarioBuscado;
         }
 
+        // Método para obtener un usuario por su nombre de usuario y contraseña
+        public Usuario ObtenerUsuarioYPasswordDeUsuario(string Usuario, string Password)
+        {
+            Usuario? usuarioBuscado = context.Usuarios.Where(u => u.NombreUsuario == Usuario && u.Contraseña == Password).FirstOrDefault();
+            return usuarioBuscado;
+        }
+
+        // Método para obtener un usuario por su ID
+        public Usuario ObtenerUsuario(int id)
+        {
+            Usuario usuarioBuscado = context.Usuarios.Where(u => u.Id == id).FirstOrDefault();
+            return usuarioBuscado;
+        }
+
+        // Método para listar todos los usuarios
         public List<Usuario> ListarUsuarios()
         {
             List<Usuario> usuarios = context.Usuarios.ToList();
-
             return usuarios;
         }
 
-        public bool CrearUsuario(Usuario usuario)
+        // Método para crear un usuario
+        public bool CrearUsuario(UsuarioDTO dto)
         {
-            // Verifica que el usuario no sea nulo antes de crearlo.
-            if (usuario == null)
-            {
-                throw new ArgumentNullException(nameof(usuario));
-            }
+            Usuario u = usuarioMapper.MapearToUsuario(dto);
 
-            context.Usuarios.Add(usuario);
+            context.Usuarios.Add(u);
             context.SaveChanges();
 
             return true;
         }
 
-        public bool ModificarUsuario(Usuario usuario, int id)
+        // Método para modificar un usuario
+        public bool ModificarUsuario(UsuarioDTO usuarioDTO)
         {
-            // Verifica que el id y el usuario sean válidos antes de modificar el usuario.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-            if (usuario == null)
-            {
-                throw new ArgumentNullException(nameof(usuario));
-            }
-
-            Usuario usuarioBuscado = context.Usuarios.Where(u => u.Id == id).FirstOrDefault();
-
-            usuarioBuscado.Nombre = usuario.Nombre;
-            usuarioBuscado.Apellido = usuario.Apellido;
-            usuarioBuscado.Contraseña = usuario.Contraseña;
-            usuarioBuscado.NombreUsuario = usuario.NombreUsuario;
-            usuarioBuscado.Mail = usuario.Mail;
+            Usuario usuarioBuscado = usuarioMapper.MapearToUsuario(usuarioDTO);
 
             context.Usuarios.Update(usuarioBuscado);
             context.SaveChanges();
@@ -78,25 +73,19 @@ namespace WebApiLautaroIriazabal.Service
             return true;
         }
 
+        // Método para eliminar un usuario
         public bool EliminarUsuario(int id)
         {
-            // Verifica que el id sea válido antes de eliminar el usuario.
-            if (id <= 0)
-            {
-                throw new ArgumentException("El id no puede ser negativo o cero.");
-            }
-
             Usuario usuarioBorrado = context.Usuarios.Where(u => u.Id == id).FirstOrDefault();
-
             if (usuarioBorrado is not null)
             {
                 context.Usuarios.Remove(usuarioBorrado);
                 context.SaveChanges();
                 return true;
             }
-
             return false;
         }
     }
+
 
 }
