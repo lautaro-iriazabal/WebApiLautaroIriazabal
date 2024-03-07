@@ -18,7 +18,7 @@ namespace WebApiLautaroIriazabal.Service
         private CoderContext context;
         private ProductoVendidoData productoVendidoData;
         private ProductoData productoData;
-        private MapperVenta ventaMapper;
+        private VentaMapper ventaMapper;
 
         // Constructor de la clase
         public VentaData(CoderContext coderContext, ProductoVendidoData productoVendidoData, ProductoData productoData, MapperVenta ventaMapper)
@@ -103,7 +103,7 @@ namespace WebApiLautaroIriazabal.Service
         // Método para crear una venta
         public bool CrearVenta(VentaDTO dto)
         {
-            Venta v = MapperVenta.MapearToVenta(dto);
+            Venta v = VentaMapper.MapearToVenta(dto);
 
             context.Venta.Add(v);
             context.SaveChanges();
