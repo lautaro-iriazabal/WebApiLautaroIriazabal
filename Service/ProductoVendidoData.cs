@@ -1,5 +1,6 @@
 ﻿using WebApiLautaroIriazabal.database;
 using WebApiLautaroIriazabal.Models;
+using WebApiLautaroIriazabal.Mapper;
 
 namespace WebApiLautaroIriazabal.Service
 {

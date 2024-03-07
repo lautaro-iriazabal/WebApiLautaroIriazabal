@@ -103,7 +103,7 @@ namespace WebApiLautaroIriazabal.Service
         // Método para crear una venta
         public bool CrearVenta(VentaDTO dto)
         {
-            Venta v = VentaMapper.MapearToVenta(dto);
+            Venta v = MapperVenta.MapearToVenta(dto);
 
             context.Venta.Add(v);
             context.SaveChanges();
