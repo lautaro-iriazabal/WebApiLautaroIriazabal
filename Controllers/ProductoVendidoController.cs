@@ -6,22 +6,50 @@ using WebApiLautaroIriazabal.DTO;
 
 namespace WebApiLautaroIriazabal.Controllers
 {
-    // La anotación ApiController indica que esta clase es un controlador de API.
+    // Definición de la clase ProductoVendidoController
     [ApiController]
-    // La anotación Route define la ruta base para las acciones de este controlador.
     [Route("api/[controller]")]
     public class ProductoVendidoController : Controller
     {
-        // Variable privada para almacenar los datos de los productos vendidos.
-        private ProductoVendidoData _productoVendidoData;
+        // Atributo privado para el servicio de productos vendidos
+        private readonly ProductoVendidoData productoVendidoService;
 
-        // Constructor que recibe los datos de los productos vendidos como parámetro.
-        public ProductoVendidoController(ProductoVendidoData productoVendidoData)
+        // Constructor de la clase
+        public ProductoVendidoController(ProductoVendidoData productoVendidoService)
         {
-            // Verifica que los datos de los productos vendidos no sean nulos antes de asignarlos.
-            this._productoVendidoData = productoVendidoData ?? throw new ArgumentNullException(nameof(productoVendidoData));
+            // Inicialización del servicio de productos vendidos
+            this.productoVendidoService = productoVendidoService;
         }
 
+   
+
+
+        // Método para obtener los productos vendidos por el ID de usuario
+        [HttpGet("{idUsuario}")]
+        public IActionResult ObtenerProductosVendidosPorIdDeUsuario(int idUsuario)
+        {
+            try
+            {
+                // Obtención de los productos vendidos por el ID de usuario
+                var productosVendidos = this.productoVendidoService.ListarProductosVendidos;
+
+                // Verificación de si se encontraron productos vendidos
+                if (productosVendidos is not null)
+                {
+                    return Ok(productosVendidos);
+                }
+                else
+                {
+                    return NotFound(new { Message = "No se encontraron productos vendidos asociados a este Usuario", Status = "404" });
+                }
+            }
+        
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
+
 
 }
