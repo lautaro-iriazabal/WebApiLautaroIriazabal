@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.Extensions.Options;
 using WebApiLautaroIriazabal.database;
+using WebApiLautaroIriazabal.Mapper;
 using WebApiLautaroIriazabal.Models;
 using WebApiLautaroIriazabal.Service;
 
@@ -26,8 +27,15 @@ namespace WebApiLautaroIriazabal
                 builder.Services.AddScoped<ProductoVendidoData>();
                 builder.Services.AddScoped<VentaData>();
 
+                builder.Services.AddScoped<UsuarioMapper>();
+                builder.Services.AddScoped<MapperProducto>();
+                builder.Services.AddScoped<MapperProductoVendido>();
+                builder.Services.AddScoped<MapperVenta>();
 
-                builder.Services.AddCors(options =>
+
+
+
+            builder.Services.AddCors(options =>
                 {
                     options.AddDefaultPolicy(policy => {
                         policy.AllowAnyMethod();
