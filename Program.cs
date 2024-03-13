@@ -38,7 +38,7 @@ namespace WebApiLautaroIriazabal
             });
 
 
-            builder.Services.AddDbContext<DataBaseContext>(option => //Agrega un contexto de tipo DataBaseContext. aui se realiza la conexion.
+            builder.Services.AddDbContext<CoderContext>(option =>    //Agrega un contexto de tipo DataBaseContext. aca se realiza la conexion.
             {
                 string server = ".";
                 string dataBase = "coderhouse";
